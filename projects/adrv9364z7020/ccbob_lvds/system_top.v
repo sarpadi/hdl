@@ -184,6 +184,7 @@ module system_top (
     .gpio_0_c2_i (gpio_0_c2_i),
     .gpio_0_c2_o (gpio_0_c2_o),
     .gpio_0_c2_t (gpio_0_c2_t),
+    .clkout_in_s (clkout_in),
     .gpio_i (gpio_i),
     .gpio_o (gpio_o),
     .gpio_t (gpio_t),

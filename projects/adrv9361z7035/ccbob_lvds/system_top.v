@@ -294,6 +294,7 @@ module system_top (
     .gpio_p6_p7_c2_i (gpio_p6_p7_c2_i),
     .gpio_p6_p7_c2_o (gpio_p6_p7_c2_o),
     .gpio_p6_p7_c2_t (gpio_p6_p7_c2_t),
+    .clkout_in_s (clkout_in),
 
 //   .gp_in_0 (gp_in_s[31:0]),
 //   .gp_in_1 (gp_in_s[63:32]),
