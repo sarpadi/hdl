@@ -65,18 +65,30 @@ module system_top (
 
   inout   [19:0]  gpio_bd,
 
+  output          rx_clk_out,
   input           rx_clk_in_p,
   input           rx_clk_in_n,
+
+  output          rx_frame_out,
   input           rx_frame_in_p,
   input           rx_frame_in_n,
+
   input   [ 5:0]  rx_data_in_p,
   input   [ 5:0]  rx_data_in_n,
+
+  input           tx_clk_in,
   output          tx_clk_out_p,
   output          tx_clk_out_n,
+
+  input           tx_frame_in,
   output          tx_frame_out_p,
   output          tx_frame_out_n,
+
   output  [ 5:0]  tx_data_out_p,
   output  [ 5:0]  tx_data_out_n,
+
+  input   [ 5:0]  tx_data_in,
+  output  [ 5:0]  rx_data_out,
 
   output          enable,
   output          txnrx,
@@ -95,8 +107,8 @@ module system_top (
   output          spi_mosi,
   input           spi_miso,
 
-  output  [85:0]  gp_out,
-  input   [85:0]  gp_in,
+  output  [77:0]  gp_out,
+  input   [77:0]  gp_in,
 
   input           gt_ref_clk_p,
   input           gt_ref_clk_n,
@@ -117,11 +129,52 @@ module system_top (
   // assignments
 
   assign clkout_out = clkout_in;
-  assign gp_out[85:0] = gp_out_s[85:0];
+  assign gp_out[77:0] = gp_out_s[77:0];
   assign gp_in_s[95:86] = gp_out_s[95:86];
-  assign gp_in_s[85: 0] = gp_in[85:0];
+  assign gp_in_s[77: 0] = gp_in[77:0];
 
   // instantiations
+
+  OBUFDS txframe_obuf_inst (
+    .O(tx_frame_out_p),
+    .OB(tx_frame_out_n),
+    .I(tx_frame_in)
+  );
+
+  OBUFDS txclk_obuf_inst (
+    .O(tx_clk_out_p),
+    .OB(tx_clk_out_n),
+    .I(tx_clk_in)
+  );
+
+  IBUFDS rxclk_obuf_inst (
+    .O(rx_clk_out),
+    .I(rx_clk_in_p),
+    .IB(rx_clk_in_n)
+  );
+
+  IBUFDS rxframe_obuf_inst (
+    .O(rx_frame_out),
+    .I(rx_frame_in_p),
+    .IB(rx_frame_in_n)
+  );
+
+  genvar i;
+  generate
+    for (i=0; i<6; i=i+1) begin
+      IBUFDS rxdata_ibuf_inst (
+        .O(rx_data_out[i]),
+        .I(rx_data_in_p[i]),
+        .IB(rx_data_in_n[i])
+       );
+
+      OBUFDS txdata_obuf_inst (
+        .O(tx_data_out_p[i]),
+        .OB(tx_data_out_n[i]),
+        .I(tx_data_in[i])
+      );
+    end
+  endgenerate
 
   IBUFDS_GTE2 i_ibufds_gt_ref_clk (
     .CEB (1'd0),
@@ -201,12 +254,6 @@ module system_top (
     .iic_main_scl_io (iic_scl),
     .iic_main_sda_io (iic_sda),
     .otg_vbusoc (1'b0),
-    .rx_clk_in_n (rx_clk_in_n),
-    .rx_clk_in_p (rx_clk_in_p),
-    .rx_data_in_n (rx_data_in_n),
-    .rx_data_in_p (rx_data_in_p),
-    .rx_frame_in_n (rx_frame_in_n),
-    .rx_frame_in_p (rx_frame_in_p),
     .spi0_clk_i (1'b0),
     .spi0_clk_o (spi_clk),
     .spi0_csn_0_o (spi_csn),
@@ -225,15 +272,6 @@ module system_top (
     .spi1_sdi_i (1'b0),
     .spi1_sdo_i (1'b0),
     .spi1_sdo_o (),
-    .tdd_sync_i (1'b0),
-    .tdd_sync_o (),
-    .tdd_sync_t (),
-    .tx_clk_out_n (tx_clk_out_n),
-    .tx_clk_out_p (tx_clk_out_p),
-    .tx_data_out_n (tx_data_out_n),
-    .tx_data_out_p (tx_data_out_p),
-    .tx_frame_out_n (tx_frame_out_n),
-    .tx_frame_out_p (tx_frame_out_p),
     .txnrx (txnrx),
     .up_enable (gpio_o[47]),
     .up_txnrx (gpio_o[48]));

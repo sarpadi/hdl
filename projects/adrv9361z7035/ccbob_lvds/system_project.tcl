@@ -13,5 +13,3 @@ adi_project_files adrv9361z7035_ccbob_lvds [list \
   "system_top.v" ]
 
 adi_project_run adrv9361z7035_ccbob_lvds
-source $ad_hdl_dir/library/axi_ad9361/axi_ad9361_delay.tcl
-
