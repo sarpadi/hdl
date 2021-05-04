@@ -27,6 +27,20 @@ set_property -dict {PACKAGE_PIN  AV14 IOSTANDARD LVCMOS18} [get_ports pb_gpio_1]
 set_property -dict {PACKAGE_PIN  AT11 IOSTANDARD LVCMOS18} [get_ports pb_gpio_2]
 set_property -dict {PACKAGE_PIN  AT12 IOSTANDARD LVCMOS18} [get_ports pb_gpio_3]
 
+set_property PACKAGE_PIN AH10 [get_ports pcie_ref_clk_p]
+create_clock -name ref_clk_1 -period 10.00 [get_ports pcie_ref_clk_p]
+
+set_property PACKAGE_PIN AM2 [get_ports pcie_rx_p[0]]
+set_property PACKAGE_PIN AL4 [get_ports pcie_rx_p[1]]
+set_property PACKAGE_PIN AK2 [get_ports pcie_rx_p[2]]
+set_property PACKAGE_PIN AJ4 [get_ports pcie_rx_p[3]]
+set_property PACKAGE_PIN AH2 [get_ports pcie_rx_p[4]]
+set_property PACKAGE_PIN AG4 [get_ports pcie_rx_p[5]]
+set_property PACKAGE_PIN AF2 [get_ports pcie_rx_p[6]]
+set_property PACKAGE_PIN AE4 [get_ports pcie_rx_p[7]]
+
+set_property -dict {PACKAGE_PIN  AH17 IOSTANDARD LVCMOS18 PULLUP true} [get_ports pcie_perstn]
+
 set_property -dict {PACKAGE_PIN  AM16 IOSTANDARD LVCMOS18} [get_ports gpio_0_exp_n]
 set_property -dict {PACKAGE_PIN  AL16 IOSTANDARD LVCMOS18} [get_ports gpio_0_exp_p]
 set_property -dict {PACKAGE_PIN  AK17 IOSTANDARD LVCMOS18} [get_ports gpio_1_exp_n]

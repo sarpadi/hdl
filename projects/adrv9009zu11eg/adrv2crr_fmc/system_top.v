@@ -213,6 +213,16 @@ module system_top (
   output              ddr4_rtl_1_reset_n,
   output              ddr4_rtl_1_par,
   input               ddr4_rtl_1_alert_n,
+  
+  input       [7:0]   pcie_rx_n,
+  input       [7:0]   pcie_rx_p,
+  output      [7:0]   pcie_tx_n,
+  output      [7:0]   pcie_tx_p,
+
+  input               pcie_ref_clk_p,
+  input               pcie_ref_clk_n,
+  input               pcie_perstn,
+  
   output              spi_clk,
   inout               spi_sdio,
   input               spi_miso
@@ -225,6 +235,8 @@ module system_top (
   wire    [94:0]  gpio_t;
 
   wire    [2:0]   spi_csn;
+  wire    [2:0]   pcie_gpio_i;
+  wire    [2:0]   pcie_gpio_o;
 
   wire            ref_clk_a;
   wire            core_clk_a;
@@ -241,6 +253,8 @@ module system_top (
   wire            spi_mosi;
   wire            spi0_miso;
   wire            spi_miso_s;
+  wire            pcie_ref_clk;
+  wire            pcie_ref_clk2;
 
   reg  [7:0]     spi_3_to_8_csn;
 
@@ -384,6 +398,13 @@ module system_top (
               pb_gpio_1,    // 1
               pb_gpio_0})); // 0
 
+  IBUFDS_GTE4 i_ibufds_pcie_ref_clk (
+    .CEB (1'd0),
+    .I (pcie_ref_clk_p),
+    .IB (pcie_ref_clk_n),
+    .O (pcie_ref_clk),
+    .ODIV2 (pcie_ref_clk2));
+    
   IBUFDS_GTE4 i_ibufds_ref_clk_1 (
     .CEB (1'd0),
     .I (ref_clk_a_p),
@@ -520,6 +541,18 @@ module system_top (
     .i2s_sdata_out(i2s_sdata_out),
     .axi_fan_pwm_o(fan_pwm),
     .axi_fan_tacho_i(fan_tach),
+    .pcie_ref_clk(pcie_ref_clk),
+    .pcie_ref_clk2(pcie_ref_clk2),
+    .pcie_perstn(pcie_perstn),
+    .pcie_rx_n(pcie_rx_n),
+    .pcie_rx_p(pcie_rx_p),
+    .pcie_tx_n(pcie_tx_n),
+    .pcie_tx_p(pcie_tx_p),
+    .pcie_gpio_i(pcie_gpio_i),
+    .pcie_gpio_o(pcie_gpio_o),
+    .pcie_soft_reset_n(pcie_gpio_o[0]),
+    .pcie_phy_ready(pcie_gpio_i[1]),
+    .pcie_user_lnk_up(pcie_gpio_i[2]),
     .spi0_csn(spi_csn),
     .spi0_miso(spi0_miso),
     .spi0_mosi(spi_mosi),
