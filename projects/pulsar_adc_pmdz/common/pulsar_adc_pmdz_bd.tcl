@@ -11,6 +11,18 @@ set sdi_delay     1
 
 set hier_spi_engine spi_pulsar_adc
 
+# specify the spi reference clock frequency in MHz
+set spi_clk_ref_frequency 166
+
+# specify ADC resolution -- supported resolutions 16/18/20 bits
+set adc_resolution 20
+
+# specify ADC sampling rate in samples/seconds
+
+# NOTE: This rate can be set just in turbo mode -- if turbo mode is not used
+# the max rate should be 1.6 MSPS
+set adc_sampling_rate 1800000
+
 ## to setup the sample rate of the system change the PULSE_PERIOD value
 ## the acutal sample rate will be PULSE_PERIOD * (1/sys_cpu_clk)
 set sampling_cycle [expr int(ceil(double($spi_clk_ref_frequency * 1000000) / $adc_sampling_rate))]
