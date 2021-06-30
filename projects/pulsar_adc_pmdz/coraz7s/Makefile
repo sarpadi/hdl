@@ -14,7 +14,7 @@ M_DEPS += ../../scripts/adi_pd.tcl
 M_DEPS += ../../../library/common/ad_iobuf.v
 
 LIB_DEPS += axi_clkgen
-LIB_DEPS += axi_pulse_gen
+LIB_DEPS += axi_pwm_gen
 LIB_DEPS += axi_dmac
 LIB_DEPS += axi_sysid
 LIB_DEPS += spi_engine/axi_spi_engine

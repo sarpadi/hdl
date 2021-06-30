@@ -22,9 +22,9 @@ ad_ip_parameter spi_clkgen CONFIG.CLK0_DIV 5
 ad_ip_parameter spi_clkgen CONFIG.VCO_DIV 1
 ad_ip_parameter spi_clkgen CONFIG.VCO_MUL 8
 
-ad_ip_instance axi_pulse_gen pulsar_adc_trigger_gen
-ad_ip_parameter pulsar_adc_trigger_gen CONFIG.PULSE_PERIOD $sampling_cycle
-ad_ip_parameter pulsar_adc_trigger_gen CONFIG.PULSE_WIDTH 1
+ad_ip_instance axi_pwm_gen pulsar_adc_trigger_gen
+ad_ip_parameter pulsar_adc_trigger_gen CONFIG.PULSE_0_PERIOD $sampling_cycle
+ad_ip_parameter pulsar_adc_trigger_gen CONFIG.PULSE_0_WIDTH 1
 
 # dma to receive data stream
 ad_ip_instance axi_dmac axi_pulsar_adc_dma
@@ -45,7 +45,7 @@ ad_connect spi_clk spi_clkgen/clk_0
 ad_connect spi_clk pulsar_adc_trigger_gen/ext_clk
 ad_connect $sys_cpu_clk pulsar_adc_trigger_gen/s_axi_aclk
 ad_connect sys_cpu_resetn pulsar_adc_trigger_gen/s_axi_aresetn
-ad_connect pulsar_adc_trigger_gen/pulse  $hier_spi_engine/offload/trigger
+ad_connect pulsar_adc_trigger_gen/pwm_0  $hier_spi_engine/offload/trigger
 
 ad_connect axi_pulsar_adc_dma/s_axis spi_pulsar_adc/M_AXIS_SAMPLE
 ad_connect spi_pulsar_adc/m_spi pulsar_adc_spi
