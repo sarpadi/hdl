@@ -14,8 +14,8 @@ set hier_spi_engine spi_pulsar_adc
 # specify the spi reference clock frequency in MHz
 set spi_clk_ref_frequency 166
 
-# specify ADC resolution -- supported resolutions 16/18/20 bits
-set adc_resolution 20
+# specify ADC resolution -- supported resolutions 14/16/18 bits
+set adc_resolution 18
 
 # specify ADC sampling rate in samples/seconds
 
