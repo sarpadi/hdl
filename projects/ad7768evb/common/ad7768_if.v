@@ -357,7 +357,8 @@ module ad7768_if (
     adc_valid_int <= adc_valid_8;
     adc_data_int <= adc_data_8;
     adc_seq_int <= adc_seq_8[23:21];
-    adc_enable_int <= adc_enable_8[7] & adc_valid_8;
+    adc_enable_int <= adc_valid_8;
+//    adc_enable_int <= adc_enable_8[7] & adc_valid_8;
     adc_crc_scnt_int <= adc_crc_scnt_8;
   end
 
@@ -470,12 +471,18 @@ module ad7768_if (
   always @(posedge adc_clk) begin
     adc_ch_valid_0 <= adc_ch_valid_d[0];
     adc_ch_valid_1 <= adc_ch_valid_d[1] & ~adc_format[1];
-    adc_ch_valid_2 <= adc_ch_valid_d[2] & ~adc_format[1] & ~adc_format[0];
-    adc_ch_valid_3 <= adc_ch_valid_d[3] & ~adc_format[1] & ~adc_format[0];
-    adc_ch_valid_4 <= adc_ch_valid_d[4] & ~adc_format[1] & ~adc_format[0];
-    adc_ch_valid_5 <= adc_ch_valid_d[5] & ~adc_format[1] & ~adc_format[0];
-    adc_ch_valid_6 <= adc_ch_valid_d[6] & ~adc_format[1] & ~adc_format[0];
-    adc_ch_valid_7 <= adc_ch_valid_d[7] & ~adc_format[1] & ~adc_format[0];
+    adc_ch_valid_2 <= adc_ch_valid_d[2] & ~adc_format[1];
+    adc_ch_valid_3 <= adc_ch_valid_d[3] & ~adc_format[1];
+    adc_ch_valid_4 <= adc_ch_valid_d[4] & ~adc_format[1];
+    adc_ch_valid_5 <= adc_ch_valid_d[5] & ~adc_format[1];
+    adc_ch_valid_6 <= adc_ch_valid_d[6] & ~adc_format[1];
+    adc_ch_valid_7 <= adc_ch_valid_d[7] & ~adc_format[1];
+//    adc_ch_valid_2 <= adc_ch_valid_d[2] & ~adc_format[1] & ~adc_format[0];
+//    adc_ch_valid_3 <= adc_ch_valid_d[3] & ~adc_format[1] & ~adc_format[0];
+//    adc_ch_valid_4 <= adc_ch_valid_d[4] & ~adc_format[1] & ~adc_format[0];
+//    adc_ch_valid_5 <= adc_ch_valid_d[5] & ~adc_format[1] & ~adc_format[0];
+//    adc_ch_valid_6 <= adc_ch_valid_d[6] & ~adc_format[1] & ~adc_format[0];
+//    adc_ch_valid_7 <= adc_ch_valid_d[7] & ~adc_format[1] & ~adc_format[0];
     adc_ch_data_0 <= adc_ch_data_d0[((32*0)+31):(32*0)];
     adc_ch_data_1 <= adc_ch_data_d1[((32*1)+31):(32*1)];
     adc_ch_data_2 <= adc_ch_data_d2[((32*2)+31):(32*2)];
