@@ -45,19 +45,19 @@ module ad7768_if (
 
   // data path interface
 
-  output                  adc_clk,
-  output  reg             adc_valid,
-  output  reg [ 31:0]     adc_data,
-  output                  adc_sync,
-
-  // control interface
-
-  input                   up_sshot,
-  input       [ 1:0]      up_format,
-  input                   up_crc_enable,
-  input                   up_crc_4_or_16_n,
-  input       [ 35:0]     up_status_clr,
-  output      [ 35:0]     up_status);
+(* mark_debug = "true" *)  output                  adc_clk,
+(* mark_debug = "true" *)  output  reg             adc_valid,
+(* mark_debug = "true" *)  output  reg [ 31:0]     adc_data,
+(* mark_debug = "true" *)  output                  adc_sync,
+(* mark_debug = "true" *)
+(* mark_debug = "true" *)  // control interface
+(* mark_debug = "true" *)
+(* mark_debug = "true" *)  input                   up_sshot,
+(* mark_debug = "true" *)  input       [ 1:0]      up_format,
+(* mark_debug = "true" *)  input                   up_crc_enable,
+(* mark_debug = "true" *)  input                   up_crc_4_or_16_n,
+(* mark_debug = "true" *)  input       [ 35:0]     up_status_clr,
+(* mark_debug = "true" *)  output      [ 35:0]     up_status);
 
   // internal registers
 
@@ -78,7 +78,7 @@ module ad7768_if (
   reg     [  7:0]   adc_crc_data = 'd0;
   reg     [  7:0]   adc_crc_mismatch_8 = 'd0;
   reg               adc_valid_int = 'd0;
-  reg     [ 31:0]   adc_data_int = 'd0;
+(* mark_debug = "true" *)  reg     [ 31:0]   adc_data_int = 'd0;
   reg     [  2:0]   adc_seq_int = 'd0;
   reg               adc_enable_int = 'd0;
   reg     [  3:0]   adc_crc_scnt_int = 'd0;
@@ -138,6 +138,7 @@ module ad7768_if (
   reg     [ 35:0]   adc_status_clr = 'd0;
   reg     [ 35:0]   adc_status_clr_d = 'd0;
   reg               adc_valid_d = 'd0;
+  reg               sync_ss = 1'h0;
 
   // internal signals
 
@@ -152,8 +153,8 @@ module ad7768_if (
   wire              adc_cnt_enable_4_s;
   wire              adc_cnt_enable_8_s;
   wire              adc_cnt_enable_s;
-  wire    [  7:0]   adc_data_in_s;
-  wire              adc_ready_in_s;
+(* mark_debug = "true" *)  wire    [  7:0]   adc_data_in_s;
+(* mark_debug = "true" *)  wire              adc_ready_in_s;
   wire              adc_clk_in_s;
   wire    [ 35:0]   adc_status_clr_s;
 
@@ -250,7 +251,16 @@ module ad7768_if (
   always @(posedge adc_clk) begin
     adc_valid_d <= adc_valid;
   end
-  assign adc_sync = adc_valid & ~adc_valid_d;
+  assign adc_sync = adc_valid & ~adc_valid_d & sync_ss;
+
+  always @(posedge adc_clk) begin
+    if (adc_ready_in_s) begin
+      sync_ss <= 1'h1;
+    end else if (adc_sync) begin
+      sync_ss <= 1'h0;
+    end
+  end
+
 
   always @(posedge adc_clk) begin
     adc_valid <= adc_valid_int & adc_enable_int;
@@ -303,7 +313,8 @@ module ad7768_if (
     adc_valid_int <= adc_valid_8;
     adc_data_int <= adc_data_8;
     adc_seq_int <= adc_seq_8[23:21];
-    adc_enable_int <= adc_enable_8[7] & adc_valid_8;
+    adc_enable_int <=   adc_valid_8;
+//    adc_enable_int <= adc_enable_8[7] & adc_valid_8;
     adc_crc_scnt_int <= adc_crc_scnt_8;
   end
 
