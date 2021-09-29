@@ -49,6 +49,7 @@ current_bd_instance /spi_ad40xx
   ## to setup the sample rate of the system change the PULSE_PERIOD value
   ## the acutal sample rate will be PULSE_PERIOD * (1/sys_cpu_clk)
   set sampling_cycle [expr int(ceil(double($spi_clk_ref_frequency * 1000000) / $ADC_SAMPLING_RATE))]
+#  ad_ip_parameter trigger_gen CONFIG.PULSE_PERIOD 46
   ad_ip_parameter trigger_gen CONFIG.PULSE_PERIOD $sampling_cycle
   ad_ip_parameter trigger_gen CONFIG.PULSE_WIDTH 1
 
@@ -112,8 +113,15 @@ ad_connect  spi_ad40xx/m_spi ad40xx_spi
 
 ad_connect  axi_ad40xx_dma/s_axis spi_ad40xx/M_AXIS_SAMPLE
 
+ad_ip_instance axi_clock_monitor clk_monitor_0
+ad_ip_parameter clk_monitor_0 CONFIG.NUM_OF_CLOCKS 2
+
+ad_connect  spi_clk clk_monitor_0/clock_0
+ad_connect  sys_cpu_clk clk_monitor_0/clock_1
+
 ad_cpu_interconnect 0x44a00000 spi_ad40xx/axi_regmap
 ad_cpu_interconnect 0x44a30000 axi_ad40xx_dma
+ad_cpu_interconnect 0x41330000 clk_monitor_0
 
 ad_cpu_interrupt "ps-13" "mb-13" axi_ad40xx_dma/irq
 ad_cpu_interrupt "ps-12" "mb-12" /spi_ad40xx/irq

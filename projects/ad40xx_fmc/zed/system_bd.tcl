@@ -6,7 +6,7 @@ source $ad_hdl_dir/projects/scripts/adi_pd.tcl
 set spi_clk_ref_frequency 166
 
 # specify ADC resolution -- supported resolutions 16/18/20 bits
-set ADC_RESOLUTION [get_env_param ADC_RESOLUTION 20]
+set ADC_RESOLUTION [get_env_param ADC_RESOLUTION 18]
 
 # specify ADC sampling rate in samples/seconds
 
@@ -22,7 +22,7 @@ ad_ip_parameter axi_sysid_0 CONFIG.ROM_ADDR_BITS 9
 ad_ip_parameter rom_sys_0 CONFIG.PATH_TO_FILE "[pwd]/mem_init_sys.txt"
 ad_ip_parameter rom_sys_0 CONFIG.ROM_ADDR_BITS 9
 
-set AD40XX_ADAQ400X_N [get_env_param AD40XX_ADAQ400X_N 1]
+set AD40XX_ADAQ400X_N [get_env_param AD40XX_ADAQ400X_N 0]
 set sys_cstring "ad40xx: $AD40XX_ADAQ400X_N - adc_sampling_rate: $ADC_SAMPLING_RATE - adc_resolution: $ADC_RESOLUTION"
 sysid_gen_sys_init_file $sys_cstring
 

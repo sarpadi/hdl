@@ -19,7 +19,7 @@ source $ad_hdl_dir/projects/scripts/adi_board.tcl
 ##    1 - EVAL-AD40XX-FMCZ
 ##    0 - EVAL-ADAQ400x
 ##
-set AD40XX_ADAQ400X_N [get_env_param AD40XX_ADAQ400X_N 1]
+set AD40XX_ADAQ400X_N [get_env_param AD40XX_ADAQ400X_N 0]
 
 adi_project ad40xx_fmc_zed
 
