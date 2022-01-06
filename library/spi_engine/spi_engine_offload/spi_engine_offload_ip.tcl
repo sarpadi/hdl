@@ -64,7 +64,16 @@ adi_add_bus "offload_sdi" "master" \
 		{"offload_sdi_data" "TDATA"} \
 	}
 
-adi_add_bus_clock "spi_clk" "spi_engine_ctrl:offload_sdi" "spi_resetn"
+adi_add_bus "offload_sdo" "slave" \
+	"xilinx.com:interface:axis_rtl:1.0" \
+	"xilinx.com:interface:axis:1.0" \
+	{ \
+		{"offload_sdo_valid" "TVALID"} \
+		{"offload_sdo_ready" "TREADY"} \
+		{"offload_sdo_data" "TDATA"} \
+	}
+
+adi_add_bus_clock "spi_clk" "spi_engine_ctrl:offload_sdi:offload_sdo" "spi_resetn"
 adi_add_bus_clock "ctrl_clk" "spi_engine_offload_ctrl"
 
 ## Parameter validations

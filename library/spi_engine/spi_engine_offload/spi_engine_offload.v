@@ -83,7 +83,11 @@ module spi_engine_offload #(
 
   output offload_sdi_valid,
   input offload_sdi_ready,
-  output [(NUM_OF_SDI * DATA_WIDTH-1):0] offload_sdi_data
+  output [(NUM_OF_SDI * DATA_WIDTH-1):0] offload_sdi_data,
+  
+  input offload_sdo_valid,
+  output offload_sdo_ready,
+  input [(NUM_OF_SDI * DATA_WIDTH-1):0] offload_sdo_data
 );
 
 reg spi_active = 1'b0;
@@ -100,8 +104,12 @@ wire [15:0] cmd_int_s;
 wire [CMD_MEM_ADDRESS_WIDTH-1:0] spi_cmd_rd_addr_next;
 wire spi_enable;
 
+
 assign cmd_valid = spi_active;
-assign sdo_data_valid = spi_active;
+
+assign offload_sdo_ready = sdo_data_ready;
+assign sdo_data_valid = offload_sdo_valid;
+//assign sdo_data_valid = spi_active;
 
 assign offload_sdi_valid = sdi_data_valid;
 
@@ -112,7 +120,9 @@ assign sdi_data_ready = (spi_enable) ? offload_sdi_ready : 1'b1;
 assign offload_sdi_data = sdi_data;
 
 assign cmd_int_s = cmd_mem[spi_cmd_rd_addr];
-assign sdo_data = sdo_mem[spi_sdo_rd_addr];
+
+assign sdo_data = offload_sdo_data;
+//assign sdo_data = sdo_mem[spi_sdo_rd_addr];
 
 /* SYNC ID counter. The offload module increments the sync_id on each
  * transaction. The initial value of the sync_id is the value of the last
