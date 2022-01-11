@@ -45,3 +45,12 @@ set_property -dict {PACKAGE_PIN K20 IOSTANDARD LVCMOS25} [get_ports ad713x_dclkm
 
 set_property -dict {PACKAGE_PIN N20 IOSTANDARD LVCMOS25} [get_ports ad713x_sdpclk]        ; ## FMC_LPC_LA01_CC_N
 
+#set_false_path 
+##    -from [get_pins -hierarchical * -filter {NAME=~*odr_generator/inst/i0_axi_pwm_gen_1/pulse_reg/Q}] \
+#    -to [get_pins -hierarchical * -filter {NAME=~*busy_sync/inst/cdc_sync_stage1_reg[0]/D}]
+
+set_false_path -to [get_pins -hierarchical * -filter {NAME=~*busy_sync/inst/cdc_sync_stage1_reg[0]/D}]
+
+
+#i_system_wrapper/system_i/odr_generator/inst/i0_axi_pwm_gen_1/pulse_reg/Q
+#i_system_wrapper/system_i/busy_sync/inst/cdc_sync_stage1_reg[0]/D
