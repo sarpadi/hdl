@@ -7,10 +7,11 @@ set data_width    32
 set async_spi_clk 1
 set num_cs        1
 set num_sdi       1
+set num_sdo       2
 set sdi_delay     1
 set hier_spi_engine spi_ad3552r_dac
 
-spi_engine_create $hier_spi_engine $data_width $async_spi_clk $num_cs $num_sdi $sdi_delay
+spi_engine_create $hier_spi_engine $data_width $async_spi_clk $num_cs $num_sdi $num_sdo $sdi_delay
 
 ad_ip_instance ad_ip_jesd204_tpl_dac spi_dds
 ad_connect spi_clk spi_dds/spi_clk
@@ -24,7 +25,7 @@ ad_connect $hier_spi_engine/offload/offload_sdo spi_dds/m_axis_dds
 ad_ip_instance axi_clkgen spi_clkgen
 ad_ip_parameter spi_clkgen CONFIG.CLK0_DIV 5
 ad_ip_parameter spi_clkgen CONFIG.VCO_DIV 1
-ad_ip_parameter spi_clkgen CONFIG.VCO_MUL 8
+ad_ip_parameter spi_clkgen CONFIG.VCO_MUL 6
 
 ad_ip_instance axi_pwm_gen pulsar_adc_trigger_gen
 ad_ip_parameter pulsar_adc_trigger_gen CONFIG.PULSE_0_PERIOD 120
