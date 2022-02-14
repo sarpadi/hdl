@@ -42,6 +42,7 @@ module spi_engine_execution #(
   parameter DEFAULT_CLK_DIV = 0,
   parameter DATA_WIDTH = 8,                   // Valid data widths values are 8/16/24/32
   parameter NUM_OF_SDI = 1,
+  parameter NUM_OF_SDO = 2,
   parameter [0:0] SDO_DEFAULT = 1'b0,
   parameter ECHO_SCLK = 0,
   parameter [1:0] SDI_DELAY = 2'b00) (
@@ -70,7 +71,7 @@ module spi_engine_execution #(
 
   input echo_sclk,
   output reg sclk,
-  output reg sdo,
+  output reg [NUM_OF_SDO-1:0] sdo,
   output reg sdo_t,
   input [NUM_OF_SDI-1:0] sdi,
   output reg [NUM_OF_CS-1:0] cs,
@@ -96,7 +97,8 @@ localparam BIT_COUNTER_CARRY = 2** (BIT_COUNTER_WIDTH + 1);
 localparam BIT_COUNTER_CLEAR = {{8{1'b1}}, {BIT_COUNTER_WIDTH{1'b0}}, 1'b1};
 
 reg sclk_int = 1'b0;
-wire sdo_int_s;
+wire [NUM_OF_SDO-1:0] sdo_int_s;
+wire [NUM_OF_SDO-1:0] sdo_int_s2;
 reg sdo_t_int = 1'b0;
 
 reg idle;
@@ -139,6 +141,7 @@ reg sdo_enabled = 1'b0;
 reg sdi_enabled = 1'b0;
 
 reg [(DATA_WIDTH-1):0] data_sdo_shift = 'h0;
+reg [(DATA_WIDTH-1):0] data_sdo_shift2 = 'h0;
 
 reg [SDI_DELAY+1:0] trigger_rx_d = {(SDI_DELAY+2){1'b0}};
 
@@ -213,7 +216,7 @@ always @(posedge clk) begin
       clk_div <= cmd[7:0];
     end else if (cmd[9:8] == REG_WORD_LENGTH) begin
       // the max value of this reg must be DATA_WIDTH
-      word_length <= cmd[7:0];
+      word_length <= cmd[7:0] >> (NUM_OF_SDO-1);
       left_aligned <= DATA_WIDTH - cmd[7:0];
     end
   end
@@ -369,18 +372,61 @@ end
 
 // Load the SDO parallel data into the SDO shift register. In case of a custom
 // data width, additional bit shifting must done at load.
-always @(posedge clk) begin
-  if ((inst_d1 == CMD_TRANSFER) && (!sdo_enabled)) begin
-    data_sdo_shift <= {DATA_WIDTH{SDO_DEFAULT}};
-  end else if (transfer_active == 1'b1 && trigger_tx == 1'b1) begin
-    if (first_bit == 1'b1)
-      data_sdo_shift <= sdo_data << left_aligned;
-    else
-      data_sdo_shift <= {data_sdo_shift[(DATA_WIDTH-2):0], 1'b0};
-  end
-end
 
-assign sdo_int_s = data_sdo_shift[DATA_WIDTH-1];
+generate
+if (NUM_OF_SDO == 1) begin : g_single_sdo
+
+  always @(posedge clk) begin
+    if ((inst_d1 == CMD_TRANSFER) && (!sdo_enabled)) begin
+      data_sdo_shift <= {DATA_WIDTH{SDO_DEFAULT}};
+    end else if (transfer_active == 1'b1 && trigger_tx == 1'b1) begin
+      if (first_bit == 1'b1)
+        data_sdo_shift <= sdo_data << left_aligned;
+      else
+        data_sdo_shift <= {data_sdo_shift[(DATA_WIDTH-2):0], 1'b0};
+    end
+  end
+
+  assign sdo_int_s = data_sdo_shift[DATA_WIDTH-1];
+
+  // Additional register stage to improve timing
+  always @(posedge clk) begin
+    sclk <= sclk_int;
+    sdo <= sdo_int_s;
+    sdo_t <= sdo_t_int;
+  end
+
+end /* g_single_sdo */
+else if (NUM_OF_SDO == 2)
+begin : g_dual_sdo
+
+    always @(posedge clk) begin
+    if ((inst_d1 == CMD_TRANSFER) && (!sdo_enabled)) begin
+      data_sdo_shift <= {DATA_WIDTH{SDO_DEFAULT}};
+    end else if (transfer_active == 1'b1 && trigger_tx == 1'b1) begin
+      if (first_bit == 1'b1) begin
+        data_sdo_shift <= sdo_data << left_aligned;
+        data_sdo_shift2 <= sdo_data << (left_aligned + 1'b1);
+      end else begin
+        data_sdo_shift <= {data_sdo_shift[(DATA_WIDTH-2):0], 2'b0};
+        data_sdo_shift2 <= {data_sdo_shift2[(DATA_WIDTH-2):0], 2'b0};
+      end
+    end
+  end
+
+  assign sdo_int_s = data_sdo_shift[DATA_WIDTH-1];
+  assign sdo_int_s2 = data_sdo_shift2[DATA_WIDTH-1];
+
+  // Additional register stage to improve timing
+  always @(posedge clk) begin
+    sclk <= sclk_int;
+    sdo[0] <= sdo_int_s2;
+    sdo[1] <= sdo_int_s;
+    sdo_t <= sdo_t_int;
+  end
+
+end /* g_dual_sdo */
+endgenerate
 
 // In case of an interface with high clock rate (SCLK > 50MHz), the latch of
 // the SDI line can be delayed with 1, 2 or 3 SPI core clock cycle.
@@ -585,13 +631,6 @@ always @(posedge clk) begin
   end else begin
     sclk_int <= cpol;
   end
-end
-
-// Additional register stage to improve timing
-always @(posedge clk) begin
-  sclk <= sclk_int;
-  sdo <= sdo_int_s;
-  sdo_t <= sdo_t_int;
 end
 
 endmodule
