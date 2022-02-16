@@ -65,6 +65,7 @@ ad_ip_parameter cnv_generator CONFIG.PULSE_1_OFFSET 1
 
 ad_ip_instance spi_axis_reorder data_reorder
 ad_ip_parameter data_reorder CONFIG.NUM_OF_LANES $NUM_OF_SDI
+ad_ip_parameter data_reorder CONFIG.NUM_OF_CHANNELS 1
 
 # dma to receive data stream
 
@@ -74,8 +75,8 @@ ad_ip_parameter axi_ad463x_dma CONFIG.DMA_TYPE_DEST 0
 ad_ip_parameter axi_ad463x_dma CONFIG.CYCLIC 0
 ad_ip_parameter axi_ad463x_dma CONFIG.AXI_SLICE_DEST 1
 ad_ip_parameter axi_ad463x_dma CONFIG.AXI_SLICE_SRC 1
-ad_ip_parameter axi_ad463x_dma CONFIG.DMA_DATA_WIDTH_SRC 64
-ad_ip_parameter axi_ad463x_dma CONFIG.DMA_DATA_WIDTH_DEST 64
+ad_ip_parameter axi_ad463x_dma CONFIG.DMA_DATA_WIDTH_SRC 32
+ad_ip_parameter axi_ad463x_dma CONFIG.DMA_DATA_WIDTH_DEST 32
 
 # Trigger for SPI offload
 if {$CAPTURE_ZONE == 1} {

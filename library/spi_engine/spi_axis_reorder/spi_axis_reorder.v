@@ -1,3 +1,4 @@
+
 // ***************************************************************************
 // ***************************************************************************
 // Copyright 2014 - 2021 (c) Analog Devices, Inc. All rights reserved.
@@ -39,18 +40,19 @@
 //
 module spi_axis_reorder #(
 
-  parameter [3:0] NUM_OF_LANES = 2) (
+  parameter [3:0] NUM_OF_LANES = 2,
+  parameter [3:0] NUM_OF_CHANNELS = 1) (
 
-  input                          axis_aclk,
-  input                          axis_aresetn,
+  input                                 axis_aclk,
+  input                                 axis_aresetn,
 
-  input                          s_axis_valid,
-  output                         s_axis_ready,
-  input [(NUM_OF_LANES * 32)-1:0]  s_axis_data,
+  input                                 s_axis_valid,
+  output                                s_axis_ready,
+  input [(NUM_OF_LANES * 32)-1:0]       s_axis_data,
 
-  output                         m_axis_valid,
-  input                          m_axis_ready,
-  output     [63:0]              m_axis_data
+  output                                m_axis_valid,
+  input                                 m_axis_ready,
+  output [(NUM_OF_CHANNELS * 32)-1:0]   m_axis_data
 );
 
   // re-packager is always ready
@@ -100,36 +102,55 @@ module spi_axis_reorder #(
     end
 
   end else if (NUM_OF_LANES == 2) begin : g_reorder_2_lanes
-
-    assign m_axis_valid = s_axis_valid;
-    assign m_axis_data = s_axis_data;
+      assign m_axis_valid = s_axis_valid;
+    if (NUM_OF_CHANNELS == 2) begin
+      assign m_axis_data = s_axis_data;
+    end else if (NUM_OF_CHANNELS == 1) begin
+      assign m_axis_data = s_axis_data[31:0];
+    end
 
   end else if (NUM_OF_LANES == 4) begin : g_reorder_4_lanes
 
     assign m_axis_valid = s_axis_valid;
-    for (i=0; i<16; i=i+1) begin
+    if (NUM_OF_CHANNELS == 2) begin
+      for (i=0; i<16; i=i+1) begin
+        // first channel
+        assign m_axis_data[2*i  ]  = s_axis_data[32+i];
+        assign m_axis_data[2*i+1]  = s_axis_data[   i];
+        // second channel
+        assign m_axis_data[2*i+32] = s_axis_data[96+i];
+        assign m_axis_data[2*i+33] = s_axis_data[64+i];
+      end
+    end else if (NUM_OF_CHANNELS == 1) begin
+      for (i=0; i<16; i=i+1) begin
       // first channel
-      assign m_axis_data[2*i  ]  = s_axis_data[32+i];
-      assign m_axis_data[2*i+1]  = s_axis_data[   i];
-      // second channel
-      assign m_axis_data[2*i+32] = s_axis_data[96+i];
-      assign m_axis_data[2*i+33] = s_axis_data[64+i];
+        assign m_axis_data[2*i  ]  = s_axis_data[32+i];
+        assign m_axis_data[2*i+1]  = s_axis_data[   i];
+      end
     end
-
   end else if (NUM_OF_LANES == 8) begin : g_reorder_8_lanes
-
     assign m_axis_valid = s_axis_valid;
-    for (i=0; i<8; i=i+1) begin
-      // first channel
-      assign m_axis_data[4*i  ]  = s_axis_data[96+i];
-      assign m_axis_data[4*i+1]  = s_axis_data[64+i];
-      assign m_axis_data[4*i+2]  = s_axis_data[32+i];
-      assign m_axis_data[4*i+3]  = s_axis_data[   i];
-      // second channel
-      assign m_axis_data[4*i+32] = s_axis_data[224+i];
-      assign m_axis_data[4*i+33] = s_axis_data[192+i];
-      assign m_axis_data[4*i+34] = s_axis_data[160+i];
-      assign m_axis_data[4*i+35] = s_axis_data[128+i];
+    if (NUM_OF_CHANNELS == 2) begin
+      for (i=0; i<8; i=i+1) begin
+        // first channel
+        assign m_axis_data[4*i  ]  = s_axis_data[96+i];
+        assign m_axis_data[4*i+1]  = s_axis_data[64+i];
+        assign m_axis_data[4*i+2]  = s_axis_data[32+i];
+        assign m_axis_data[4*i+3]  = s_axis_data[   i];
+        // second channel
+        assign m_axis_data[4*i+32] = s_axis_data[224+i];
+        assign m_axis_data[4*i+33] = s_axis_data[192+i];
+        assign m_axis_data[4*i+34] = s_axis_data[160+i];
+        assign m_axis_data[4*i+35] = s_axis_data[128+i];
+      end
+    end else if (NUM_OF_CHANNELS == 1) begin
+      for (i=0; i<8; i=i+1) begin
+                // first channel
+        assign m_axis_data[4*i  ]  = s_axis_data[96+i];
+        assign m_axis_data[4*i+1]  = s_axis_data[64+i];
+        assign m_axis_data[4*i+2]  = s_axis_data[32+i];
+        assign m_axis_data[4*i+3]  = s_axis_data[   i];
+      end
     end
 
   end else begin
