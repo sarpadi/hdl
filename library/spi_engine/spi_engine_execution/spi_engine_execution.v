@@ -42,7 +42,7 @@ module spi_engine_execution #(
   parameter DEFAULT_CLK_DIV = 0,
   parameter DATA_WIDTH = 8,                   // Valid data widths values are 8/16/24/32
   parameter NUM_OF_SDI = 1,
-  parameter NUM_OF_SDO = 2,
+  parameter NUM_OF_SDO = 1,
   parameter [0:0] SDO_DEFAULT = 1'b0,
   parameter ECHO_SCLK = 0,
   parameter [1:0] SDI_DELAY = 2'b00) (
