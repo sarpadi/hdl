@@ -23,9 +23,9 @@ ad_connect $hier_spi_engine/offload/offload_sdo spi_dds/m_axis_dds
 #ad_connect spi_dds/dac_sync_in_0 GND
 
 ad_ip_instance axi_clkgen spi_clkgen
-ad_ip_parameter spi_clkgen CONFIG.CLK0_DIV 5
+ad_ip_parameter spi_clkgen CONFIG.CLK0_DIV 10
 ad_ip_parameter spi_clkgen CONFIG.VCO_DIV 1
-ad_ip_parameter spi_clkgen CONFIG.VCO_MUL 6
+ad_ip_parameter spi_clkgen CONFIG.VCO_MUL 12
 
 ad_ip_instance axi_pwm_gen pulsar_adc_trigger_gen
 ad_ip_parameter pulsar_adc_trigger_gen CONFIG.PULSE_0_PERIOD 120
@@ -40,7 +40,7 @@ ad_ip_parameter axi_pulsar_adc_dma CONFIG.SYNC_TRANSFER_START 0
 ad_ip_parameter axi_pulsar_adc_dma CONFIG.AXI_SLICE_SRC 0
 ad_ip_parameter axi_pulsar_adc_dma CONFIG.AXI_SLICE_DEST 1
 ad_ip_parameter axi_pulsar_adc_dma CONFIG.DMA_2D_TRANSFER 0
-ad_ip_parameter axi_pulsar_adc_dma CONFIG.DMA_DATA_WIDTH_SRC $data_width
+ad_ip_parameter axi_pulsar_adc_dma CONFIG.DMA_DATA_WIDTH_SRC 64 ;#$data_width
 ad_ip_parameter axi_pulsar_adc_dma CONFIG.DMA_DATA_WIDTH_DEST 64
 
 ad_connect $sys_cpu_clk spi_clkgen/clk
