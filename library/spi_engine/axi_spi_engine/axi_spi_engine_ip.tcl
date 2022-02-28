@@ -17,6 +17,7 @@ adi_ip_ttcl axi_spi_engine "axi_spi_engine_constr.ttcl"
 
 adi_ip_add_core_dependencies { \
 	analog.com:user:util_axis_fifo:1.0 \
+	analog.com:user:util_axis_fifo_asym:1.0 \
 	analog.com:user:util_cdc:1.0 \
 }
 
