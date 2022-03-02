@@ -76,7 +76,6 @@ module system_top (
   output          i2s_sdata_out,
   input           i2s_sdata_in,
 
-
   inout           iic_scl,
   inout           iic_sda,
   inout   [ 1:0]  iic_mux_scl,
@@ -84,15 +83,15 @@ module system_top (
 
   input           otg_vbusoc,
 
-  output          ad3552_ldacn,
-  output          ad3552_resetn,
-  output          ad3552_alertn,
-  output          ad3552_qspi_sel,
+  inout           ad3552_ldacn,
+  inout           ad3552_resetn,
+  inout           ad3552_alertn,
+  inout           ad3552_qspi_sel,
 
-  output          ad3552_gpio_6,
-  output          ad3552_gpio_7,
-  output          ad3552_gpio_8,
-  output          ad3552_gpio_9,
+  inout           ad3552_gpio_6,
+  inout           ad3552_gpio_7,
+  inout           ad3552_gpio_8,
+  inout           ad3552_gpio_9,
 
   output          ad3552_spi_cs,
   output          ad3552_spi_sclk,
@@ -119,25 +118,33 @@ module system_top (
 
   // instantiations
 
-  assign gpio_i[63:34] = 31'b0;
-//  assign ad3552_spi_sdo_ts = {ad3552_spi_sdo_t, ad3552_spi_sdo_t, ad3552_spi_sdo_t, ad3552_spi_sdo_t};
-
+  assign gpio_i[63:40] = 31'b0;
 
   ad_iobuf #(
     .DATA_WIDTH(4)
   ) i_ad3552_spi_iobuf (
-    .dio_t({ad3552_spi_sdo_t, ad3552_spi_sdo_t, ad3552_spi_sdo_t, ad3552_spi_sdo_t}),
+    .dio_t({ad3552_spi_sdo_t.
+            ad3552_spi_sdo_t,
+            ad3552_spi_sdo_t,
+            ad3552_spi_sdo_t}),
     .dio_i(ad3552_spi_sdo),
     .dio_o(ad3552_spi_sdi),
     .dio_p(ad3552_spi_sdio));
 
   ad_iobuf #(
-    .DATA_WIDTH(1)
-  ) i_ad469x_iobuf (
-    .dio_t(gpio_t[32]),
-    .dio_i(gpio_o[32]),
-    .dio_o(gpio_i[32]),
-    .dio_p(ad469x_resetn));
+    .DATA_WIDTH(8)
+  ) i_ad3552r_iobuf (
+    .dio_t(gpio_t[39:32]),
+    .dio_i(gpio_o[39:32]),
+    .dio_o(gpio_i[39:32]),
+    .dio_p({ad3552_gpio_9,
+            ad3552_gpio_8,
+            ad3552_gpio_7,
+            ad3552_gpio_6,
+            ad3552_qspi_sel,
+            ad3552_alertn,
+            ad3552_ldacn,
+            ad3552_resetn}));
 
   ad_iobuf #(
     .DATA_WIDTH(32)
@@ -236,4 +243,3 @@ module system_top (
 endmodule
 
 // ***************************************************************************
-
