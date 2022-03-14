@@ -83,21 +83,19 @@ module system_top (
 
   input           otg_vbusoc,
 
-  inout           ad3552_ldacn,
-  inout           ad3552_resetn,
-  inout           ad3552_alertn,
-  inout           ad3552_qspi_sel,
+  inout           ad3552r_ldacn,
+  inout           ad3552r_resetn,
+  inout           ad3552r_alertn,
+  inout           ad3552r_qspi_sel,
 
-  inout           ad3552_gpio_6,
-  inout           ad3552_gpio_7,
-  inout           ad3552_gpio_8,
-  inout           ad3552_gpio_9,
+  inout           ad3552r_gpio_6,
+  inout           ad3552r_gpio_7,
+  inout           ad3552r_gpio_8,
+  inout           ad3552r_gpio_9,
 
-  output          ad3552_spi_cs,
-  output          ad3552_spi_sclk,
-  inout   [ 3:0]  ad3552_spi_sdio
-//  output          ad3552_spi_pd
-
+  output          ad3552r_spi_cs,
+  output          ad3552r_spi_sclk,
+  inout   [ 3:0]  ad3552r_spi_sdio
   );
 
   // internal signals
@@ -111,10 +109,10 @@ module system_top (
   wire    [ 1:0]  iic_mux_sda_i_s;
   wire    [ 1:0]  iic_mux_sda_o_s;
   wire            iic_mux_sda_t_s;
-  wire    [ 3:0]  ad3552_spi_sdo;
-  wire    [ 3:0]  ad3552_spi_sdi;
-  wire    [ 3:0]  ad3552_spi_sdo_ts;
-  wire            ad3552_spi_sdo_t;
+  wire    [ 3:0]  ad3552r_spi_sdo;
+  wire    [ 3:0]  ad3552r_spi_sdi;
+  wire    [ 3:0]  ad3552r_spi_sdo_ts;
+  wire            ad3552r_spi_sdo_t;
 
   // instantiations
 
@@ -122,14 +120,14 @@ module system_top (
 
   ad_iobuf #(
     .DATA_WIDTH(4)
-  ) i_ad3552_spi_iobuf (
-    .dio_t({ad3552_spi_sdo_t,
-            ad3552_spi_sdo_t,
-            ad3552_spi_sdo_t,
-            ad3552_spi_sdo_t}),
-    .dio_i(ad3552_spi_sdo),
-    .dio_o(ad3552_spi_sdi),
-    .dio_p(ad3552_spi_sdio));
+  ) i_ad3552r_spi_iobuf (
+    .dio_t({ad3552r_spi_sdo_t,
+            ad3552r_spi_sdo_t,
+            ad3552r_spi_sdo_t,
+            ad3552r_spi_sdo_t}),
+    .dio_i(ad3552r_spi_sdo),
+    .dio_o(ad3552r_spi_sdi),
+    .dio_p(ad3552r_spi_sdio));
 
   ad_iobuf #(
     .DATA_WIDTH(8)
@@ -231,11 +229,11 @@ module system_top (
     .spi1_sdi_i (1'b0),
     .spi1_sdo_i (1'b0),
     .spi1_sdo_o (),
-    .ad3552r_dac_spi_sdo (ad3552_spi_sdo),
-    .ad3552r_dac_spi_sdo_t (ad3552_spi_sdo_t),
-    .ad3552r_dac_spi_sdi (ad3552_spi_sdi),
-    .ad3552r_dac_spi_cs (ad3552_spi_cs),
-    .ad3552r_dac_spi_sclk (ad3552_spi_sclk),
+    .ad3552r_dac_spi_sdo (ad3552r_spi_sdo),
+    .ad3552r_dac_spi_sdo_t (ad3552r_spi_sdo_t),
+    .ad3552r_dac_spi_sdi (ad3552r_spi_sdi),
+    .ad3552r_dac_spi_cs (ad3552r_spi_cs),
+    .ad3552r_dac_spi_sclk (ad3552r_spi_sclk),
     .ad3552r_dac_spi_three_wire(),
     .otg_vbusoc (otg_vbusoc),
     .spdif (spdif));
