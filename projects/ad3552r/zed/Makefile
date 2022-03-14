@@ -4,9 +4,9 @@
 ## Auto-generated, do not modify!
 ####################################################################################
 
-PROJECT_NAME := ad3552_zed
+PROJECT_NAME := ad3552r_zed
 
-M_DEPS += ../common/pulsar_adc_pmdz_bd.tcl
+M_DEPS += ../common/ad3552r_bd.tcl
 M_DEPS += ../../scripts/adi_pd.tcl
 M_DEPS += ../../common/zed/zed_system_constr.xdc
 M_DEPS += ../../common/zed/zed_system_bd.tcl
