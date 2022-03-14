@@ -123,7 +123,7 @@ module system_top (
   ad_iobuf #(
     .DATA_WIDTH(4)
   ) i_ad3552_spi_iobuf (
-    .dio_t({ad3552_spi_sdo_t.
+    .dio_t({ad3552_spi_sdo_t,
             ad3552_spi_sdo_t,
             ad3552_spi_sdo_t,
             ad3552_spi_sdo_t}),
