@@ -95,7 +95,11 @@ module system_top (
 
   output          ad3552r_spi_cs,
   output          ad3552r_spi_sclk,
-  inout   [ 3:0]  ad3552r_spi_sdio
+
+  input           ad3552r_spi_sdi,
+  output          ad3552r_spi_sdo
+
+//  inout   [ 3:0]  ad3552r_spi_sdio
   );
 
   // internal signals
@@ -109,8 +113,8 @@ module system_top (
   wire    [ 1:0]  iic_mux_sda_i_s;
   wire    [ 1:0]  iic_mux_sda_o_s;
   wire            iic_mux_sda_t_s;
-  wire    [ 3:0]  ad3552r_spi_sdo;
-  wire    [ 3:0]  ad3552r_spi_sdi;
+//  wire    [ 3:0]  ad3552r_spi_sdo;
+//  wire    [ 3:0]  ad3552r_spi_sdi;
   wire    [ 3:0]  ad3552r_spi_sdo_ts;
   wire            ad3552r_spi_sdo_t;
 
@@ -118,16 +122,16 @@ module system_top (
 
   assign gpio_i[63:40] = 31'b0;
 
-  ad_iobuf #(
-    .DATA_WIDTH(4)
-  ) i_ad3552r_spi_iobuf (
-    .dio_t({ad3552r_spi_sdo_t,
-            ad3552r_spi_sdo_t,
-            ad3552r_spi_sdo_t,
-            ad3552r_spi_sdo_t}),
-    .dio_i(ad3552r_spi_sdo),
-    .dio_o(ad3552r_spi_sdi),
-    .dio_p(ad3552r_spi_sdio));
+//  ad_iobuf #(
+//    .DATA_WIDTH(4)
+//  ) i_ad3552r_spi_iobuf (
+//    .dio_t({ad3552r_spi_sdo_t,
+//            ad3552r_spi_sdo_t,
+//            ad3552r_spi_sdo_t,
+//            ad3552r_spi_sdo_t}),
+//    .dio_i(ad3552r_spi_sdo),
+//    .dio_o(ad3552r_spi_sdi),
+//    .dio_p(ad3552r_spi_sdio));
 
   ad_iobuf #(
     .DATA_WIDTH(8)
@@ -135,14 +139,14 @@ module system_top (
     .dio_t(gpio_t[39:32]),
     .dio_i(gpio_o[39:32]),
     .dio_o(gpio_i[39:32]),
-    .dio_p({ad3552_gpio_9,
-            ad3552_gpio_8,
-            ad3552_gpio_7,
-            ad3552_gpio_6,
-            ad3552_qspi_sel,
-            ad3552_alertn,
-            ad3552_ldacn,
-            ad3552_resetn}));
+    .dio_p({ad3552r_gpio_9,
+            ad3552r_gpio_8,
+            ad3552r_gpio_7,
+            ad3552r_gpio_6,
+            ad3552r_qspi_sel,
+            ad3552r_alertn,
+            ad3552r_ldacn,
+            ad3552r_resetn}));
 
   ad_iobuf #(
     .DATA_WIDTH(32)
