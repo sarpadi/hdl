@@ -135,14 +135,14 @@ module system_top (
     .dio_t(gpio_t[39:32]),
     .dio_i(gpio_o[39:32]),
     .dio_o(gpio_i[39:32]),
-    .dio_p({ad3552_gpio_9,
-            ad3552_gpio_8,
-            ad3552_gpio_7,
-            ad3552_gpio_6,
-            ad3552_qspi_sel,
-            ad3552_alertn,
-            ad3552_ldacn,
-            ad3552_resetn}));
+    .dio_p({ad3552r_gpio_9,
+            ad3552r_gpio_8,
+            ad3552r_gpio_7,
+            ad3552r_gpio_6,
+            ad3552r_qspi_sel,
+            ad3552r_alertn,
+            ad3552r_ldacn,
+            ad3552r_resetn}));
 
   ad_iobuf #(
     .DATA_WIDTH(32)
