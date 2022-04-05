@@ -56,9 +56,9 @@ module spi_engine_execution #(
   input cmd_valid,
   input [15:0] cmd,
 
-  input sdo_data_valid,
-  output reg sdo_data_ready,
-  input [(DATA_WIDTH-1):0] sdo_data,
+ (* mark_debug = "true" *) input sdo_data_valid,
+ (* mark_debug = "true" *) output reg sdo_data_ready,
+ (* mark_debug = "true" *) input [(DATA_WIDTH-1):0] sdo_data,
 
 
   input sdi_data_ready,
@@ -71,10 +71,10 @@ module spi_engine_execution #(
 
   input echo_sclk,
   output reg sclk,
-  output reg [NUM_OF_SDO-1:0] sdo,
-  output reg sdo_t,
-  input [NUM_OF_SDI-1:0] sdi,
-  output reg [NUM_OF_CS-1:0] cs,
+ (* mark_debug = "true" *) output reg [NUM_OF_SDO-1:0] sdo,
+ (* mark_debug = "true" *) output reg sdo_t,
+ (* mark_debug = "true" *) input [NUM_OF_SDI-1:0] sdi,
+ (* mark_debug = "true" *) output reg [NUM_OF_CS-1:0] cs,
   output reg three_wire
 );
 
@@ -142,6 +142,8 @@ reg sdi_enabled = 1'b0;
 
 reg [(DATA_WIDTH-1):0] data_sdo_shift = 'h0;
 reg [(DATA_WIDTH-1):0] data_sdo_shift2 = 'h0;
+reg [(DATA_WIDTH-1):0] data_sdo_shift3 = 'h0;
+reg [(DATA_WIDTH-1):0] data_sdo_shift4 = 'h0;
 
 reg [SDI_DELAY+1:0] trigger_rx_d = {(SDI_DELAY+2){1'b0}};
 
@@ -216,7 +218,7 @@ always @(posedge clk) begin
       clk_div <= cmd[7:0];
     end else if (cmd[9:8] == REG_WORD_LENGTH) begin
       // the max value of this reg must be DATA_WIDTH
-      word_length <= cmd[7:0] >> (NUM_OF_SDO-1);
+      word_length <= cmd[7:0] >> (NUM_OF_SDO-2);  //WORK STILL NEEDED HERE. WILL NOT WORK WITH NORMAL SPI AS IS
       left_aligned <= DATA_WIDTH - cmd[7:0];
     end
   end
@@ -416,6 +418,8 @@ begin : g_dual_sdo
 
   assign sdo_int_s = data_sdo_shift[DATA_WIDTH-1];
   assign sdo_int_s2 = data_sdo_shift2[DATA_WIDTH-1];
+  assign sdo_int_s3 = data_sdo_shift2[DATA_WIDTH-1];
+  assign sdo_int_s4 = data_sdo_shift2[DATA_WIDTH-1];
 
   // Additional register stage to improve timing
   always @(posedge clk) begin
@@ -426,6 +430,43 @@ begin : g_dual_sdo
   end
 
 end /* g_dual_sdo */
+else if (NUM_OF_SDO == 4)
+begin : g_quad_sdo
+
+      always @(posedge clk) begin
+    if ((inst_d1 == CMD_TRANSFER) && (!sdo_enabled)) begin
+      data_sdo_shift <= {DATA_WIDTH{SDO_DEFAULT}};
+    end else if (transfer_active == 1'b1 && trigger_tx == 1'b1) begin
+      if (first_bit == 1'b1) begin
+        data_sdo_shift <= sdo_data << left_aligned;
+        data_sdo_shift2 <= sdo_data << (left_aligned + 2'd1);
+        data_sdo_shift3 <= sdo_data << (left_aligned + 2'd2);
+        data_sdo_shift4 <= sdo_data << (left_aligned + 2'd3);
+      end else begin
+        data_sdo_shift <= {data_sdo_shift[(DATA_WIDTH-2):0], 4'b0};
+        data_sdo_shift2 <= {data_sdo_shift2[(DATA_WIDTH-2):0], 4'b0};
+        data_sdo_shift3 <= {data_sdo_shift3[(DATA_WIDTH-2):0], 4'b0};
+        data_sdo_shift4 <= {data_sdo_shift4[(DATA_WIDTH-2):0], 4'b0};
+      end
+    end
+  end
+
+  assign sdo_int_s = data_sdo_shift[DATA_WIDTH-1];
+  assign sdo_int_s2 = data_sdo_shift2[DATA_WIDTH-1];
+  assign sdo_int_s3 = data_sdo_shift3[DATA_WIDTH-1];
+  assign sdo_int_s4 = data_sdo_shift4[DATA_WIDTH-1];
+
+  // Additional register stage to improve timing
+  always @(posedge clk) begin
+    sclk <= sclk_int;
+    sdo[0] <= sdo_int_s4;
+    sdo[1] <= sdo_int_s3;
+    sdo[2] <= sdo_int_s2;
+    sdo[3] <= sdo_int_s;
+    sdo_t <= sdo_t_int;
+  end
+  
+end /* g_quad_sdo */
 endgenerate
 
 // In case of an interface with high clock rate (SCLK > 50MHz), the latch of
