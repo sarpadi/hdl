@@ -62,7 +62,7 @@ module spi_engine_execution #(
 
 
   input sdi_data_ready,
-  output reg sdi_data_valid,
+  output sdi_data_valid,
   output [(NUM_OF_SDI * DATA_WIDTH)-1:0] sdi_data,
 
   input sync_ready,
@@ -96,6 +96,8 @@ localparam BIT_COUNTER_WIDTH = DATA_WIDTH > 16 ? 5 :
 localparam BIT_COUNTER_CARRY = 2** (BIT_COUNTER_WIDTH + 1);
 localparam BIT_COUNTER_CLEAR = {{8{1'b1}}, {BIT_COUNTER_WIDTH{1'b0}}, 1'b1};
 
+wire [(NUM_OF_SDI * DATA_WIDTH)-1:0] sdi_data_s;
+reg sdi_data_valid_s = 1'b0;
 reg sclk_int = 1'b0;
 wire [NUM_OF_SDO-1:0] sdo_int_s;
 wire [NUM_OF_SDO-1:0] sdo_int_s2;
@@ -175,6 +177,18 @@ wire end_of_sdi_latch;
 
 assign cs_gen = inst_d1 == CMD_CHIPSELECT && cs_sleep_counter_compare == 1'b1;
 assign cmd_ready = idle;
+
+assign sdi_data_valid = sdi_data_valid_s;
+
+genvar j;
+generate
+  for (j=0; j<128; j=j+1) begin: g_reorder_sdi
+    assign sdi_data [4*j  ] = sdi_data_s [j     ];
+    assign sdi_data [4*j+1] = sdi_data_s [j + 32];
+    assign sdi_data [4*j+2] = sdi_data_s [j + 64];
+    assign sdi_data [4*j+3] = sdi_data_s [j + 96];
+  end
+endgenerate
 
 always @(posedge clk) begin
   if (exec_transfer_cmd) begin
@@ -324,7 +338,7 @@ always @(posedge clk) begin
     sdo_data_ready <= 1'b0;
 end
 
-assign io_ready1 = (sdi_data_valid == 1'b0 || sdi_data_ready == 1'b1) &&
+assign io_ready1 = (sdi_data_valid_s == 1'b0 || sdi_data_ready == 1'b1) &&
         (sdo_enabled == 1'b0 || last_transfer == 1'b1 || sdo_data_valid == 1'b1);
 assign io_ready2 = (sdi_enabled == 1'b0 || sdi_data_ready == 1'b1) &&
         (sdo_enabled == 1'b0 || last_transfer == 1'b1 || sdo_data_valid == 1'b1);
@@ -465,7 +479,7 @@ begin : g_quad_sdo
     sdo[3] <= sdo_int_s;
     sdo_t <= sdo_t_int;
   end
-  
+
 end /* g_quad_sdo */
 endgenerate
 
@@ -565,10 +579,10 @@ if (ECHO_SCLK == 1) begin : g_echo_sclk_miso_latch
 
   end
 
-  assign sdi_data = sdi_data_latch;
+  assign sdi_data_s = sdi_data_latch;
   assign last_sdi_bit = (sdi_counter == 0) && (sdi_counter_d == word_length-1);
 
-  // sdi_data_valid is synchronous to SPI clock, so synchronize the
+  // sdi_data_valid_s is synchronous to SPI clock, so synchronize the
   // last_sdi_bit to SPI clock
 
   reg [3:0] last_sdi_bit_m = 4'b0;
@@ -582,13 +596,13 @@ if (ECHO_SCLK == 1) begin : g_echo_sclk_miso_latch
 
   always @(posedge clk) begin
     if (cs_active_s) begin
-      sdi_data_valid <= 1'b0;
+      sdi_data_valid_s <= 1'b0;
     end else if (sdi_enabled == 1'b1 &&
                  last_sdi_bit_m[3] == 1'b0 &&
                  last_sdi_bit_m[2] == 1'b1) begin
-      sdi_data_valid <= 1'b1;
+      sdi_data_valid_s <= 1'b1;
     end else if (sdi_data_ready == 1'b1) begin
-      sdi_data_valid <= 1'b0;
+      sdi_data_valid_s <= 1'b0;
     end
   end
 
@@ -633,7 +647,7 @@ begin : g_sclk_miso_latch
       end
     end
 
-    assign sdi_data[i*DATA_WIDTH+:DATA_WIDTH] = data_sdi_shift;
+    assign sdi_data_s[i*DATA_WIDTH+:DATA_WIDTH] = data_sdi_shift;
 
   end
 
@@ -650,11 +664,11 @@ begin : g_sclk_miso_latch
 
   always @(posedge clk) begin
     if (resetn == 1'b0)
-      sdi_data_valid <= 1'b0;
+      sdi_data_valid_s <= 1'b0;
     else if (sdi_enabled == 1'b1 && last_sdi_bit == 1'b1 && trigger_rx_s == 1'b1)
-      sdi_data_valid <= 1'b1;
+      sdi_data_valid_s <= 1'b1;
     else if (sdi_data_ready == 1'b1)
-      sdi_data_valid <= 1'b0;
+      sdi_data_valid_s <= 1'b0;
   end
 
 end /* g_sclk_miso_latch */
