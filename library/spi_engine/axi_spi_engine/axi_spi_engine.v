@@ -429,7 +429,7 @@ module axi_spi_engine #(
   assign sdo_fifo_in_data = up_wdata_s[(DATA_WIDTH-1):0];
 
   util_axis_fifo #(
-    .DATA_WIDTH(DATA_WIDTH),
+    .DATA_WIDTH(32),
     .ASYNC_CLK(ASYNC_SPI_CLK),
     .ADDRESS_WIDTH(SDO_FIFO_ADDRESS_WIDTH),
     .M_AXIS_REGISTERED(0),
@@ -458,11 +458,10 @@ module axi_spi_engine #(
 
   assign sdi_fifo_out_ready = up_rreq_s == 1'b1 && up_raddr_s == 8'h3a;
 
-  util_axis_fifo_asym #(
-    .S_DATA_WIDTH(NUM_OF_SDI * DATA_WIDTH),
-    .M_DATA_WIDTH(32),
+  util_axis_fifo #(
+    .DATA_WIDTH(32),
     .ASYNC_CLK(ASYNC_SPI_CLK),
-    .S_ADDRESS_WIDTH(SDI_FIFO_ADDRESS_WIDTH),
+    .ADDRESS_WIDTH(SDI_FIFO_ADDRESS_WIDTH),
     .M_AXIS_REGISTERED(0),
     .ALMOST_EMPTY_THRESHOLD(1),
     .ALMOST_FULL_THRESHOLD(31)
