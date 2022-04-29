@@ -87,7 +87,7 @@ module spi_engine_offload #(
   
   input offload_sdo_valid,
   output offload_sdo_ready,
-  input [(NUM_OF_SDI * DATA_WIDTH-1):0] offload_sdo_data
+  input [(DATA_WIDTH-1):0] offload_sdo_data
 );
 
 reg spi_active = 1'b0;
