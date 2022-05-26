@@ -53,8 +53,7 @@ module spi_axis_reorder #(
   output     [63:0]              m_axis_data
 );
 
-  // re-packager is always ready
-  assign s_axis_ready = 1'b1;
+  assign s_axis_ready = m_axis_ready;
 
   genvar i, j;
   generate
