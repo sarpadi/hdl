@@ -44,6 +44,15 @@ set_msg_config -id {Vivado 12-1790} -string "Evaluation features should NOT be u
 ## CRITICAL -- needs to be reviewed
 set_msg_config -id {BD 41-1343} -new_severity WARNING
 
+
+## disable interconnect CRIT WARNING
+set_msg_config -id {xilinx.com:ip:smartconnect:1.0-1} -new_severity WARNING
+
+
+#set_msg_config -id {Designutils 20-1280} -string "*Could not find module 'eth_xcvr_gth_channel'.*" -new_severity WARNING
+
+#set_msg_config -id {xilinx.com:ip:smartconnect:1.0-1} -string "*system_axi_hpc0_interconnect_0: The device(s) attached to /S00_AXI do not share a common clock domain with this smartconnect instance.*" -new_severity WARNING
+
 ## The connection to interface pin A is being overridden by the user. This pin
 ## will not be connected as a part of interface connection B (pin A is part of
 ## the B interface)

@@ -9,6 +9,7 @@ source $ad_hdl_dir/projects/scripts/adi_project_xilinx.tcl
 source $ad_hdl_dir/projects/scripts/adi_board.tcl
 
 adi_project ad_gmsl2eth_sl_k26
+
 adi_project_files ad_gmsl2eth_sl_k26 [list \
   "system_top.v" \
   "system_constr.xdc" \
@@ -22,5 +23,10 @@ adi_project_files ad_gmsl2eth_sl_k26 [list \
   "$ad_hdl_dir/../corundum/fpga/mqnic/KR260/fpga/lib/axis/syn/vivado/axis_async_fifo.tcl" \
   "$ad_hdl_dir/../corundum/fpga/common/syn/vivado/tdma_ber_ch.tcl" \
   "$ad_hdl_dir/library/common/ad_iobuf.v" ]
+
+
+set_msg_config -id {Designutils 20-1280} -new_severity WARNING
+
+#set_msg_config -id {xilinx.com:ip:smartconnect:1.0-1} -new_severity WARNING
 
 adi_project_run ad_gmsl2eth_sl_k26
